@@ -7,8 +7,8 @@ def clashfinder_Function(array_of_acts):
         return []
     acts_to_remove = ['Diddy Sweg', '10 Yrs Of Jungle Cakes - Burt Cope, Deekline, Ed Solo & Maddy V']
     # Load the lineup data from the uploaded CSV file
-    cwd = os.getcwd()
-    file_path =  f"{cwd}/Lineup.csv"
+
+    file_path =  f"Lineup.csv"
     lineup_df = pd.read_csv(file_path)
 
     # Combine date and time columns to create Start DateTime and Finish DateTime columns
