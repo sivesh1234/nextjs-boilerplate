@@ -59,8 +59,6 @@ export default function Component() {
     const authEndpoint = 'https://accounts.spotify.com/authorize';
     const responseType = 'token';
 
-    const authUrl = `${authEndpoint}?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes.join(' '))}&response_type=${responseType}`;
-
     window.location.href = authUrl;
   };
 
