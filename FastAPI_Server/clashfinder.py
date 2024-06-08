@@ -1,8 +1,7 @@
 import pandas as pd
 from io import StringIO
 
-DATA = StringIO("""
-Act,Day,Stage,X Coordinate,Y Coordinate,Timeslot,Start,Finish,Start Date,Finish Date,Start DateTime,Finish DateTime
+DATA = StringIO("""Act,Day,Stage,X Coordinate,Y Coordinate,Timeslot,Start,Finish,Start Date,Finish Date,Start DateTime,Finish DateTime
 Glowbros,Wednesday,Walkabouts,60,33,01:00 - 03:00,01:00,03:00,27/06/2024,27/06/2024,26/06/2024 01:00,27/06/2024 03:00
 The Sky At Day,Wednesday,Walkabouts,60,33,10:50 - 11:35,10:50,11:35,26/06/2024,26/06/2024,26/06/2024 10:50,26/06/2024 11:35
 Films,Wednesday,Atchin Tan,0,0,11:00 - 12:30,11:00,12:30,26/06/2024,26/06/2024,26/06/2024 11:00,26/06/2024 12:30
@@ -3475,7 +3474,7 @@ def clashfinder_Function(array_of_acts):
     acts_to_remove = ['Diddy Sweg', '10 Yrs Of Jungle Cakes - Burt Cope, Deekline, Ed Solo & Maddy V']
     # Load the lineup data from the uploaded CSV file
 
-    lineup_df = pd.read_csv(DATA)
+    lineup_df = pd.read_csv(DATA, sep=",")
 
     # Combine date and time columns to create Start DateTime and Finish DateTime columns
     lineup_df['Start DateTime'] = pd.to_datetime(lineup_df['Start Date'] + ' ' + lineup_df['Start'], format='%d/%m/%Y %H:%M')
