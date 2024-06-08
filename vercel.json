@@ -8,7 +8,7 @@
       },
         {
             "src": "app/page.tsx",
-            "use": "@vercel/node"
+            "use": "@vercel/next"
         }
     ],
     "routes": [
