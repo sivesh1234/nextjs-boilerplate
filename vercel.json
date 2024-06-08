@@ -4,7 +4,8 @@
     "builds": [
       {
         "src": "FastAPI_Server/main.py",
-        "use": "@vercel/python"
+        "use": "@vercel/python",
+        "includeFiles": "FastAPI_Server/**"
       },
         {
             "src": "package.json",
