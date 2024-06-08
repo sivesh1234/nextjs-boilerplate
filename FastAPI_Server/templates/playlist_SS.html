@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glastotify Playlist</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+        body {
+            background-color: #000000;
+            color: #FFFFFF;
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-top: 2rem;
+            font-weight: 700;
+        }
+        #playlist-preview {
+            margin-top: 2rem;
+        }
+        iframe {
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        .schedule-container {
+            position: relative;
+            margin: 2rem auto;
+            width: 100%;
+            max-width: 1200px;
+            height: 500px;
+            overflow: auto;
+        }
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 100px repeat({{ stages|length }}, 1fr);
+            position: relative;
+        }
+        .time-column {
+            background-color: #333333;
+            position: sticky;
+            left: 0;
+            z-index: 1;
+        }
+        .time-cell {
+            border: 1px solid #444444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.5rem;
+            height: 40px; /* Adjust the height for 30-minute intervals */
+        }
+        .stage-header {
+            background-color: #333333;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            border: 1px solid #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            height: 40px; /* Adjust to match the time cell height */
+        }
+        .act-box {
+            background-color: #444444;
+            color: #FFFFFF;
+            border-radius: 5px;
+            padding: 0.2rem;
+            font-size: 0.5rem;
+            position: absolute;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Glastotify</h1>
+        <div id="playlist-preview">
+            <iframe src="https://open.spotify.com/embed/playlist/{{ playlist_id }}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+        </div>
+        <div class="schedule-container">
+            <div class="schedule-grid">
+                <div class="time-column">
+                    {% for day in ['Thursday', 'Friday', 'Saturday', 'Sunday', 'Monday'] %}
+                        {% for hour in range(0, 24) %}
+                        <div class="time-cell">{{ day }} {{ '%02d:00' | format(hour) }}</div>
+                        <div class="time-cell">{{ day }} {{ '%02d:30' | format(hour) }}</div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+                {% for stage in stages %}
+                <div class="stage-header">{{ stage }}</div>
+                {% endfor %}
+                {% for act in schedule %}
+                {% set start_minutes = (act['Start DateTime'] - datetime.strptime('2023-06-27 00:00', '%Y-%m-%d %H:%M')).total_seconds() // 60 %}
+                {% set end_minutes = (act['Finish DateTime'] - datetime.strptime('2023-06-27 00:00', '%Y-%m-%d %H:%M')).total_seconds() // 60 %}
+                <div class="act-box" style="top: {{ start_minutes }}px; height: {{ end_minutes - start_minutes }}px; grid-column: {{ stages.index(act['Stage']) + 2 }};">
+                    {{ act['Act'] }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

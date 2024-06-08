@@ -7,11 +7,12 @@ export default function Component() {
   const [clashes, setClashes] = useState<any[]>([]);
   const [loadingArtists, setLoadingArtists] = useState(true);
   const [loadingClashes, setLoadingClashes] = useState(true);
+  const [playlistId, setPlaylistId] = useState<string | null>(null);
   const [errorArtists, setErrorArtists] = useState<string | null>(null);
   const [errorClashes, setErrorClashes] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:8000/artists')
+    fetch('http://localhost:8080/artists')
       .then(response => {
         if (!response.ok) {
           throw new Error(`Error fetching data: ${response.statusText}`);
@@ -30,7 +31,7 @@ export default function Component() {
 
   useEffect(() => {
     console.log("Fetching clashes data...");
-    fetch('http://localhost:8000/clashes')
+    fetch('http://localhost:8080/clashes')
       .then(response => {
         if (!response.ok) {
           throw new Error(`Error fetching data: ${response.statusText}`);
@@ -48,6 +49,24 @@ export default function Component() {
       });
   }, []);
 
+  useEffect(() => {
+    console.log("Fetching playlist ID...");
+    fetch('http://localhost:8080/playlist_id')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Error fetching playlist ID: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Fetched playlist ID:", data);
+        setPlaylistId(data.playlist_id);
+      })
+      .catch(error => {
+        console.error("Error fetching playlist ID:", error);
+      });
+  }, []);
+
   const handleSpotifyLogin = () => {
     const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID; // Replace with your Spotify client ID
     const redirectUri = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI; // Replace with your redirect URI
@@ -59,7 +78,7 @@ export default function Component() {
     const authEndpoint = 'https://accounts.spotify.com/authorize';
     const responseType = 'token';
 
-    window.location.href = authUrl;
+    window.location.href = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join('%20')}&response_type=${responseType}`;
   };
 
   return (
@@ -82,12 +101,20 @@ export default function Component() {
         )}
       </div>
       <div className="bg-white rounded-lg shadow-md p-6 flex justify-center">
-        <button
-          onClick={handleSpotifyLogin}
-          className="bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition duration-300"
-        >
-          Login with Spotify
-        </button>
+        <div id="playlist-preview">
+          {playlistId ? (
+            <iframe
+              src={`https://open.spotify.com/embed/playlist/${playlistId}`}
+              width="300"
+              height="380"
+              frameBorder="0"
+              allowTransparency="true"
+              allow="encrypted-media"
+            ></iframe>
+          ) : (
+            <p>Loading playlist...</p>
+          )}
+        </div>
       </div>
       <h2 className="text-2xl font-bold mt-8 mb-4 text-center">Schedule Clashes</h2>
       {loadingClashes ? (
@@ -102,10 +129,9 @@ export default function Component() {
                 <div className="flex items-center">
                   <TriangleIcon className="w-6 h-6 text-red-500 mr-4" />
                   <div>
-                  <h3 className="text-lg font-semibold text-black">
-{clash.artists.map((artist, index) => `${artist} [${clash.stages[index]}]`).join(" vs. ")}
-</h3>
-
+                    <h3 className="text-lg font-semibold text-black">
+                      {clash.artists.map((artist, index) => `${artist} [${clash.stages[index]}]`).join(" vs. ")}
+                    </h3>
                     <p className="text-black">Clash on {new Date(clash.start).toLocaleDateString()}</p>
                   </div>
                 </div>
