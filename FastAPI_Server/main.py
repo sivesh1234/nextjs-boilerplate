@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from clashfinder import *
+from .clashfinder import *
 import requests
 app = FastAPI()
 
