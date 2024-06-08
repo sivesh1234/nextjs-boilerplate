@@ -17,7 +17,7 @@
         },
         {
             "src": "/(.*)",
-            "dest": "app.page.tsx"
+            "dest": "app/page.tsx"
         }
     ]
   }
