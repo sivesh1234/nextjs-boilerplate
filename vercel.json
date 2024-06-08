@@ -5,7 +5,10 @@
       {
         "src": "FastAPI_Server/main.py",
         "use": "@vercel/python",
-        "includeFiles": "FastAPI_Server/**"
+        "config": {
+            "maxLambdaSize": "15mb",
+            "includeFiles": ["*.py", "Lineup.csv"]
+        }
       },
         {
             "src": "package.json",
