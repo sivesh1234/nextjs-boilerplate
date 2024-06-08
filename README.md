@@ -17,6 +17,7 @@ Then, initiate the fastAPI backend at port 8080 with:
 ```bash
 uvicorn spotifyloginv2:app --reload --port 8080
 ```
+Go to http://localhost:8080/login to intiate the Spotify OAuth
 
 Make sure the fastAPI redirects to the port of the front-end, default is:
 ```bash
