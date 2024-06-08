@@ -1,31 +1,56 @@
 "use client";
 
-import Image from "next/image";
-import GlastoPlaylist from '../components/glasto-playlist.tsx'
-
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/Z37PGNhPiQ3
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
+import React, { useEffect, useState } from 'react';
 
 export default function Component() {
-  const artists = [
-    "Dua Lipa",
-    "Harry Styles",
-    "Billie Eilish",
-    "The Weeknd",
-    "Bad Bunny",
-    "Taylor Swift",
-    "Ed Sheeran",
-    "Ariana Grande",
-    "Drake",
-    "Rihanna",
-  ];
+  const [artists, setArtists] = useState<string[]>([]);
+  const [clashes, setClashes] = useState<any[]>([]);
+  const [loadingArtists, setLoadingArtists] = useState(true);
+  const [loadingClashes, setLoadingClashes] = useState(true);
+  const [errorArtists, setErrorArtists] = useState<string | null>(null);
+  const [errorClashes, setErrorClashes] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('http://localhost:8000/artists')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Error fetching data: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        setArtists(data.artists);
+        setLoadingArtists(false);
+      })
+      .catch(error => {
+        setErrorArtists(error.message);
+        setLoadingArtists(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    console.log("Fetching clashes data...");
+    fetch('http://localhost:8000/clashes')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Error fetching data: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Fetched clashes data:", data);
+        setClashes(data.clashes);
+        setLoadingClashes(false);
+      })
+      .catch(error => {
+        setErrorClashes(error.message);
+        setLoadingClashes(false);
+      });
+  }, []);
 
   const handleSpotifyLogin = () => {
-    const clientId = 'YOUR_SPOTIFY_CLIENT_ID'; // Replace with your Spotify client ID
-    const redirectUri = 'YOUR_REDIRECT_URI'; // Replace with your redirect URI
+    const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID; // Replace with your Spotify client ID
+    const redirectUri = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI; // Replace with your redirect URI
     const scopes = [
       'user-read-private',
       'user-read-email',
@@ -39,38 +64,39 @@ export default function Component() {
     window.location.href = authUrl;
   };
 
-  const clashes = [
-    {
-      id: 1,
-      artists: ["Dua Lipa", "Harry Styles"],
-      start: "2023-06-24T19:00:00",
-      end: "2023-06-24T19:30:00",
-    },
-  ];
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">Your Festival Playlist</h1>
+      <h1 className="text-4xl font-extrabold mb-4 text-center">GlastoJam</h1>
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Performing Artists</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {artists.map((artist, index) => (
-            <div key={index} className="bg-gray-100 rounded-md p-4 flex items-center justify-center">
-              <p className="text-gray-500">{artist}</p>
-            </div>
-          ))}
-        </div>
+        <h2 className="text-2xl font-bold mb-4 text-center">Artists On Your Spotify</h2>
+        {loadingArtists ? (
+          <p className="text-center">Loading...</p>
+        ) : errorArtists ? (
+          <p className="text-red-500 text-center">{errorArtists}</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 justify-center items-center">
+            {artists.map((artist, index) => (
+              <div key={index} className="bg-gray-100 rounded-md p-4 flex items-center justify-center">
+                <p className="text-gray-500 text-center">{artist}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-      <div className="bg-white rounded-lg shadow-md p-6">
-      <button
+      <div className="bg-white rounded-lg shadow-md p-6 flex justify-center">
+        <button
           onClick={handleSpotifyLogin}
           className="bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition duration-300"
         >
           Login with Spotify
         </button>
       </div>
-      <h2 className="text-2xl font-bold mt-8 mb-4">Schedule Clashes</h2>
-      {clashes.length > 0 ? (
+      <h2 className="text-2xl font-bold mt-8 mb-4 text-center">Schedule Clashes</h2>
+      {loadingClashes ? (
+        <p className="text-center">Loading...</p>
+      ) : errorClashes ? (
+        <p className="text-red-500 text-center">{errorClashes}</p>
+      ) : clashes.length > 0 ? (
         <div className="bg-white rounded-lg shadow-md p-6">
           <ul className="space-y-4">
             {clashes.map((clash) => (
@@ -78,11 +104,14 @@ export default function Component() {
                 <div className="flex items-center">
                   <TriangleIcon className="w-6 h-6 text-red-500 mr-4" />
                   <div>
-                    <h3 className="text-lg font-semibold">{clash.artists.join(" vs. ")}</h3>
-                    <p className="text-gray-500">Clash</p>
+                  <h3 className="text-lg font-semibold text-black">
+{clash.artists.map((artist, index) => `${artist} [${clash.stages[index]}]`).join(" vs. ")}
+</h3>
+
+                    <p className="text-black">Clash on {new Date(clash.start).toLocaleDateString()}</p>
                   </div>
                 </div>
-                <div className="text-gray-500">
+                <div className="text-black">
                   {new Date(clash.start).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -98,7 +127,7 @@ export default function Component() {
           </ul>
         </div>
       ) : (
-        <p className="text-gray-500">No clashes found!</p>
+        <p className="text-gray-500 text-center">No clashes found!</p>
       )}
     </div>
   );
