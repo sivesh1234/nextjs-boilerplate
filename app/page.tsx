@@ -73,10 +73,12 @@ export default function Component() {
     const scopes = [
       'user-read-private',
       'user-read-email',
+      'playlist-modify-public',
+      'user-top-read'
       // Add more scopes as needed
     ];
     const authEndpoint = 'https://accounts.spotify.com/authorize';
-    const responseType = 'token';
+    const responseType = 'code';
 
     window.location.href = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join('%20')}&response_type=${responseType}`;
   };
@@ -116,6 +118,9 @@ export default function Component() {
           )}
         </div>
       </div>
+      <button onClick={handleSpotifyLogin} className="mt-8 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+        Login with Spotify
+      </button>
       <h2 className="text-2xl font-bold mt-8 mb-4 text-center">Schedule Clashes</h2>
       {loadingClashes ? (
         <p className="text-center">Loading...</p>
