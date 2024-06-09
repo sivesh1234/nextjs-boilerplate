@@ -236,9 +236,9 @@ async def callback(request: Request):
     clashes_variable = clashfinder_Function(artists_variable)
 
     # Instead of rendering HTML, redirect to the frontend URL
-    if os.environ.get("ENVIRONMENT") == "production":
-        return RedirectResponse(url="/")
-    return RedirectResponse(url="http://localhost:3003/")
+    # if os.environ.get("ENVIRONMENT") == "production":
+    return RedirectResponse(url="/")
+    # return RedirectResponse(url="http://localhost:3003/")
 
 @app.get("/generate_playlist")
 async def generate_playlist(request: Request):
