@@ -68,6 +68,7 @@ export default function Component() {
   }, []);
 
   const handleSpotifyLogin = () => {
+    console.log("Logging in with Spotify...")
     const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID; // Replace with your Spotify client ID
     const redirectUri = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI; // Replace with your redirect URI
     const scopes = [
@@ -82,6 +83,10 @@ export default function Component() {
 
     window.location.href = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join('%20')}&response_type=${responseType}`;
   };
+
+  console.log("HERE")
+  console.log(process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID)
+  console.log(process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI)
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -110,7 +115,7 @@ export default function Component() {
               width="300"
               height="380"
               frameBorder="0"
-              allowTransparency="true"
+              allowTransparency={true}
               allow="encrypted-media"
             ></iframe>
           ) : (
@@ -135,7 +140,7 @@ export default function Component() {
                   <TriangleIcon className="w-6 h-6 text-red-500 mr-4" />
                   <div>
                     <h3 className="text-lg font-semibold text-black">
-                      {clash.artists.map((artist, index) => `${artist} [${clash.stages[index]}]`).join(" vs. ")}
+                      {clash.artists.map((artist: string, index: number) => `${artist} [${clash.stages[index]}]`).join(" vs. ")}
                     </h3>
                     <p className="text-black">Clash on {new Date(clash.start).toLocaleDateString()}</p>
                   </div>
@@ -162,7 +167,7 @@ export default function Component() {
   );
 }
 
-function TriangleIcon(props) {
+function TriangleIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

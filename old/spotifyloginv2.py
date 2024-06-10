@@ -47,7 +47,7 @@ templates = Jinja2Templates(directory="templates")
 
 # Allow CORS for your frontend application
 origins = [
-    "http://localhost:3004",  # Your Next.js frontend URL
+    "http://localhost:3000",  # Your Next.js frontend URL
 ]
 
 app.add_middleware(
