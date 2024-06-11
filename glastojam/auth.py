@@ -37,7 +37,9 @@ sp_oauth = SpotifyOAuth(
     client_id=SPOTIFY_CLIENT_ID,
     client_secret=SPOTIFY_CLIENT_SECRET,
     redirect_uri=SPOTIFY_REDIRECT_URI,
-    scope="user-read-private user-read-email"
+    scope="user-read-private user-read-email",
+    check_cache=False
+    
 )
 
 @router.get("/login")
