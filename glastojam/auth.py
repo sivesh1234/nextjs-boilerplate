@@ -8,7 +8,6 @@ from pydantic import BaseModel
 from datetime import datetime, timedelta
 from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI, SECRET_KEY, ALGORITHM
 from jobs import start_job_1, start_job_2
-import redis
 
 router = APIRouter()
 
@@ -38,8 +37,6 @@ sp_oauth = SpotifyOAuth(
     scope="user-read-private user-read-email"
 )
 
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
-
 @router.get("/login")
 async def login():
     print("At endpoint /login")
@@ -58,6 +55,20 @@ async def check_auth(request: Request):
         if user_id is None:
             raise HTTPException(status_code=401, detail="Invalid token")
         return JSONResponse({"status": "authenticated"})
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+@router.get('/get_user_id')
+async def get_id(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return JSONResponse({"id": user_id})
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
@@ -83,12 +94,11 @@ async def callback(code: str):
     response.set_cookie(key="access_token", value=jwt_token, httponly=True)
     return response
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=401,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+def get_current_user(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: str = payload.get("sub")

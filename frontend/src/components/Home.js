@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import backgroundImage from '../img/glasto-poster4.jpeg'; // Adjust the path as necessary
+
 
 const API_BASE_URL = 'http://localhost:8080';
 
@@ -23,13 +25,17 @@ const Home = () => {
   }, [navigate]);
 
   const handleLogin = async () => {
+    console.log('Logging in...');
       const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   
       try {
+        console.log('here')
+        console.log(apiBaseUrl)
         const response = await fetch(`${apiBaseUrl}/login`, {
           method: 'GET',
           credentials: 'include',
         });
+        console.log('here2')
   
         if (response.ok) {
           const data = await response.json();
@@ -42,17 +48,33 @@ const Home = () => {
       }
     };
 
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-6">Login with Spotify</h1>
-      <button
-        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-        onClick={handleLogin}
-      >
-        Login with Spotify
-      </button>
-    </div>
-  );
+    return (
+      <div className="flex flex-col lg:flex-row min-h-screen">
+        {/* Left side (Login) */}
+        <div className="flex flex-1 items-center justify-center bg-black p-4">
+          <div className="home-page flex flex-col items-center justify-center min-h-screen w-full lg:min-h-0">
+            <h1 className="text-5xl font-bold mb-6 text-white">GlastoJam</h1>
+            <button
+              className="bg-green-500 font-bold text-white px-4 py-2 rounded-md hover:bg-green-600"
+              onClick={handleLogin}
+            >
+              Login with Spotify
+            </button>
+          </div>
+        </div>
+  
+        {/* Right side (Image) */}
+        <div
+          className="hidden lg:block lg:w-1/2 bg-cover bg-center"
+          style={{
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: 'auto 100%',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center right'
+          }}
+        ></div>
+      </div>
+    );
 };
 
 export default Home;
