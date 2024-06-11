@@ -5,9 +5,10 @@ import json
 from db import redis_client
 import time
 
-celery_app = Celery(__name__, broker='redis://localhost:6379/0')
+celery = Celery(__name__, broker='redis://localhost:6379/0')
 
-@celery_app.task
+# Job 1: Get top artists
+@celery.task
 def start_job_1(user_id, access_token):
     print(f"Starting job 1 for user {user_id}")
     time.sleep(5)
@@ -22,7 +23,8 @@ def start_job_1(user_id, access_token):
     # Trigger job 2
     start_job_2.delay(user_id, access_token, top_artists_data)
 
-@celery_app.task
+# Job 2: Get recommended artists
+@celery.task
 def start_job_2(user_id, access_token, top_artists_data):
     print(f"Starting job 2 for user {user_id}")
     time.sleep(10)
@@ -33,6 +35,10 @@ def start_job_2(user_id, access_token, top_artists_data):
 
     # Notify the user via Redis
     redis_client.publish('job_updates', json.dumps({"user_id": user_id, "job": "job_2", "result": recommended_artists}))
+
+# Job 3: Generate playlist
+
+# Job 4: Clashes
 
 def get_job_result(job_id, user_id):
     result = redis_client.get(f"{user_id}_{job_id}")

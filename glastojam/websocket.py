@@ -1,8 +1,15 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, Request, Query
-from fastapi.responses import JSONResponse
-from typing import List, Optional
 import json
+from typing import List, Optional
+
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
+from fastapi.responses import JSONResponse
 import jwt
+import asyncio
+import aioredis
+
+async def get_redis_client():
+    return await aioredis.from_url("redis://localhost")  # Update with your Redis URL
+
 from config import SECRET_KEY, ALGORITHM
 from db import redis_client
 
@@ -10,39 +17,22 @@ router = APIRouter()
 
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: List[WebSocket] = []
         self.user_connections: dict = {}
 
     async def connect(self, websocket: WebSocket, user_id: str):
         await websocket.accept()
-        self.active_connections.append(websocket)
-        if user_id not in self.user_connections:
-            self.user_connections[user_id] = []
-        self.user_connections[user_id].append(websocket)
-
+        self.user_connections[user_id] = websocket
+        
     def disconnect(self, websocket: WebSocket, user_id: str):
-        self.active_connections.remove(websocket)
-        self.user_connections[user_id].remove(websocket)
-        if not self.user_connections[user_id]:
+        if user_id in self.user_connections:
             del self.user_connections[user_id]
+            
+        print("User disconnected")
+        print(self.user_connections)
 
     async def send_personal_message(self, message: dict, user_id: str):
         if user_id in self.user_connections:
-            for connection in self.user_connections[user_id]:
-                await connection.send_text(json.dumps(message))
-
-    async def broadcast(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_text(message)
-
-    async def handle_redis_messages(self):
-        pubsub = redis_client.pubsub()
-        pubsub.subscribe('job_updates')
-        for message in pubsub.listen():
-            if message['type'] == 'message':
-                data = json.loads(message['data'])
-                user_id = data['user_id']
-                await self.send_personal_message(data, user_id)
+            await self.user_connections[user_id].send_text(json.dumps(message))
 
 manager = ConnectionManager()
 
@@ -50,21 +40,54 @@ manager = ConnectionManager()
 async def websocket_endpoint(websocket: WebSocket, user: str = Query(...)):
     print(f"User {user} connected")
     await manager.connect(websocket, user)
+    
+    async_redis_client = await get_redis_client()
+    
+    statuses = {
+        'job_1': False,
+        'job_2': False,
+    }
+
+    async def poll_redis_for_results(user_id):
+        print(f"Polling Redis for results for user {user_id}")
+        try:
+            while True:
+                print("loop")
+                # If all jobs returned - exit
+                if all(statuses.values()):
+                    break
+                
+                # Check for job results in Redis
+                for job_num in range(1, 3):
+                    # Skip if already sent
+                    if statuses[f"job_{job_num}"]:
+                        continue
+                    
+                    key = f"job_{job_num}_result_{user_id}"
+                    print(key)
+                    
+                    result = await async_redis_client.get(key)
+                    if result:
+                        await manager.send_personal_message({"job": f"job_{job_num}", "result": json.loads(result.decode("utf-8"))}, user_id)
+                        statuses[f"job_{job_num}"] = True
+                
+                # Polling interval
+                await asyncio.sleep(1)  # Adjust the sleep interval as needed
+
+        except WebSocketDisconnect as e:
+            print(f"User {user} disconnected during polling - {e}")
+            manager.disconnect(websocket, user)
+
+    poll_task = asyncio.create_task(poll_redis_for_results(user))
+
     try:
         while True:
             data = await websocket.receive_text()
             await manager.send_personal_message({"message": f"You wrote: {data}"}, user)
-    except WebSocketDisconnect:
-        print(f"User {user} disconnected")
+    except WebSocketDisconnect as e:
+        print(f"User {user} disconnected - {e}")
         manager.disconnect(websocket, user)
-
-def get_user_id_from_token(token: str) -> Optional[str]:
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("sub")
-        return user_id
-    except jwt.PyJWTError:
-        return None
+        poll_task.cancel()
 
 @router.get("/get_connections")
 async def get_connections():

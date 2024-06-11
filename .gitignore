@@ -44,3 +44,5 @@ next-env.d.ts
 __pycahce__/
 
 node_modules/
+
+*.pyc

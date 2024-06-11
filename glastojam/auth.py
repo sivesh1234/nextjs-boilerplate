@@ -1,13 +1,16 @@
-from fastapi import APIRouter, HTTPException, Depends, Request
+from datetime import datetime, timedelta
+
+from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
 import jwt
-from pydantic import BaseModel
-from datetime import datetime, timedelta
+
 from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI, SECRET_KEY, ALGORITHM
-from jobs import start_job_1, start_job_2
+from jobs import start_job_1
+from db import redis_client
 
 router = APIRouter()
 
@@ -87,8 +90,13 @@ async def callback(code: str):
     # Create a JWT containing only the user ID
     jwt_token = create_jwt_token(data={"sub": user.id})
     
-    # Start the jobs with the user ID and Spotify access token
-    job_1 = start_job_1.delay(user.id, access_token)
+    # If user is already in Redis, don't start the jobs
+    if not redis_client.exists(user.id):
+        # Start the jobs with the user ID and Spotify access token
+        job_1 = start_job_1.delay(user.id, access_token)
+        
+        # Put job ID for user in Redis
+        redis_client.set(user.id, job_1.id)
 
     response = RedirectResponse(url=f"http://localhost:3000/data")
     response.set_cookie(key="access_token", value=jwt_token, httponly=True)

@@ -48,7 +48,7 @@ const Data = () => {
 
           // If no results, connect to WebSocket and wait for updates
           if (results !== num_jobs) {
-            connectWebSocket();
+            await connectWebSocket();
           }
         }
       } catch (error) {
@@ -85,6 +85,7 @@ const Data = () => {
     socket.onmessage = (event) => {
       console.log('WebSocket message received:', event.data)
       const message = JSON.parse(event.data);
+      console.log(message)
       if (message.job === 'job_1') {
         setArtists(message.result);
         // setPlaylistId(message.result.playlistId);
@@ -100,20 +101,20 @@ const Data = () => {
     return socket;
   };
 
-  useEffect(() => {
-    let socket;
-    const initializeWebSocket = async () => {
-      socket = await connectWebSocket();
-    };
+  // useEffect(() => {
+  //   let socket;
+  //   const initializeWebSocket = async () => {
+  //     socket = await connectWebSocket();
+  //   };
 
-    initializeWebSocket();
+  //   initializeWebSocket();
 
-    return () => {
-      if (socket) {
-        socket.close();
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if (socket) {
+  //       socket.close();
+  //     }
+  //   };
+  // }, []);
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen">
@@ -141,7 +142,7 @@ const Data = () => {
         <div className="mb-4">
           <h3 className="text-2xl font-bold mb-4">Your Artists</h3>
           {artists === null ? (
-            <div className="flex items-center justify-center h-full">
+            <div className="flex items-center justify-center h-full job-load-box">
               <Loader type="ball-pulse" active color="#1dd660" />
             </div>
           ) : errorArtists ? (
@@ -149,7 +150,7 @@ const Data = () => {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 justify-center items-center">
               {artists.map((artist, index) => (
-                <div key={index} className="bg-gray-100 rounded-md p-4 flex items-center justify-center">
+                <div key={index} className="bg-gray-100 rounded-md p-4 flex items-center justify-center animate-pop-in-late">
                   <p className="text-gray-500 text-center">{artist.name}</p>
                 </div>
               ))}
@@ -159,7 +160,7 @@ const Data = () => {
         <div>
           <h3 className="text-2xl font-bold mb-4">Recommended Artists</h3>
           {reccs === null ? (
-            <div className="flex items-center justify-center h-full">
+            <div className="flex items-center justify-center h-full job-load-box">
               <Loader type="ball-pulse" active color="#1dd660" />
             </div>
           ) : errorReccs ? (
@@ -167,7 +168,7 @@ const Data = () => {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 justify-center items-center">
               {reccs.map((recc, index) => (
-                <div key={index} className="bg-gray-100 rounded-md p-4 flex items-center justify-center">
+                <div key={index} className="bg-gray-100 rounded-md p-4 flex items-center justify-center animate-pop-in-late">
                   <p className="text-gray-500 text-center">{recc.name}</p>
                 </div>
               ))}

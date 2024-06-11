@@ -55,3 +55,29 @@ code {
   font-style: normal;
   font-display: swap;
 }
+
+.job-load-box {
+  min-height: 56px;
+}
+
+@keyframes popInLate {
+  0% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(0);
+  }
+
+  80% {
+    transform: scale(1.025);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-pop-in-late {
+  animation: popInLate 0.5s ease-out;
+}
