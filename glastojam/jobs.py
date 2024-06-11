@@ -5,9 +5,9 @@ import json
 from db import redis_client
 import time
 
-celery = Celery(__name__, broker='redis://localhost:6379/0')
+celery_app = Celery(__name__, broker='redis://localhost:6379/0')
 
-@celery.task
+@celery_app.task
 def start_job_1(user_id, access_token):
     print(f"Starting job 1 for user {user_id}")
     time.sleep(5)
@@ -22,7 +22,7 @@ def start_job_1(user_id, access_token):
     # Trigger job 2
     start_job_2.delay(user_id, access_token, top_artists_data)
 
-@celery.task
+@celery_app.task
 def start_job_2(user_id, access_token, top_artists_data):
     print(f"Starting job 2 for user {user_id}")
     time.sleep(10)

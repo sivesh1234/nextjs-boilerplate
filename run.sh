@@ -11,7 +11,7 @@ sleep 2
 
 # # Start Celery worker in the background
 # echo "Starting Celery worker..."
-celery -A jobs worker --loglevel=info &
+# celery -A jobs worker --loglevel=info &
 
 # Give Celery a moment to start
 sleep 2
