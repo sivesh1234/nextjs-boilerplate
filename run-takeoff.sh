@@ -1,0 +1,1 @@
+docker run --gpus all -p 3000:3000 -v ~/.takeoff_cache:/code/models -v ./ml/takeoff-config.yml:/code/config.yaml tytn/takeoff-pro:0.14.3-gpu
