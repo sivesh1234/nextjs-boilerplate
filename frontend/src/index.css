@@ -81,3 +81,7 @@ code {
 .animate-pop-in-late {
   animation: popInLate 0.5s ease-out;
 }
+
+.artist-box {
+  min-height: 56px;
+}

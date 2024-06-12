@@ -14,6 +14,12 @@ from db import redis_client
 
 router = APIRouter()
 
+credentials_exception = HTTPException(
+    status_code=401,
+    detail="Could not validate credentials",
+    headers={"WWW-Authenticate": "Bearer"},
+)
+
 class User(BaseModel):
     id: str
     username: str
@@ -37,8 +43,7 @@ sp_oauth = SpotifyOAuth(
     client_id=SPOTIFY_CLIENT_ID,
     client_secret=SPOTIFY_CLIENT_SECRET,
     redirect_uri=SPOTIFY_REDIRECT_URI,
-    scope="user-read-private user-read-email",
-    check_cache=False
+    scope="user-read-private user-read-email playlist-modify-public user-top-read"
     
 )
 
@@ -80,7 +85,7 @@ async def get_id(request: Request):
 @router.get("/callback")
 async def callback(code: str):
     print("At endpoint /callback")
-    token_info = sp_oauth.get_access_token(code)
+    token_info = sp_oauth.get_access_token(code, check_cache=False)
     if not token_info:
         raise HTTPException(status_code=400, detail="Invalid Spotify token")
     
@@ -94,6 +99,7 @@ async def callback(code: str):
     
     # If user is already in Redis, don't start the jobs
     if not redis_client.exists(user.id):
+        print("Callback starting jobs")
         # Start the jobs with the user ID and Spotify access token
         job_1 = start_job_1.delay(user.id, access_token)
         

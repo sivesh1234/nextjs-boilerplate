@@ -150,7 +150,7 @@ const Data = () => {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 justify-center items-center">
               {artists.map((artist, index) => (
-                <div key={index} className="bg-gray-100 rounded-md p-4 flex items-center justify-center animate-pop-in-late">
+                <div key={index} className="bg-gray-100 rounded-md py-1 px-2 flex items-center justify-center animate-pop-in-late artist-box">
                   <p className="text-gray-500 text-center">{artist.name}</p>
                 </div>
               ))}
