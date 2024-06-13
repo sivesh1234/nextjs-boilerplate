@@ -7,13 +7,15 @@ import redis
 import spotipy
 
 from db import redis_client
-from artists import artists
+from artists import artist_manager
 
 celery = Celery(__name__, broker='redis://localhost:6379/0')
 
 # Job 1: Get top artists
 @celery.task
 def start_job_1(user_id, access_token):
+    
+    artists = artist_manager.artists
     
     print(f"Starting job 1 for user {user_id}")
     time.sleep(5)
