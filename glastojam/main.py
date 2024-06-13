@@ -36,9 +36,11 @@ async def job_result(job_id: str, current_user: User = Depends(get_current_user)
 async def fetch_results(user: User = Depends(get_current_user)):
     job_1_result = redis_client.get(f"job_1_result_{user.id}")
     job_2_result = redis_client.get(f"job_2_result_{user.id}")
+    job_3_result = redis_client.get(f"job_3_result_{user.id}")
 
     return JSONResponse({
         "job_1_result": json.loads(job_1_result) if job_1_result else None,
-        "job_2_result": json.loads(job_2_result) if job_2_result else None
+        "job_2_result": json.loads(job_2_result) if job_2_result else None,
+        "job_3_result": json.loads(job_3_result) if job_3_result else None,
     }) 
 

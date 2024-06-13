@@ -85,3 +85,28 @@ code {
 .artist-box {
   min-height: 56px;
 }
+
+/* Glasto Colours */
+.colour_0 {
+  background-color: #01b5f5;
+}
+
+.colour_1 {
+  background-color: #04a141;
+}
+
+.colour_2 {
+  background-color: #eb620e;
+}
+
+.colour_3 {
+  background-color: #e51730;
+}
+
+.colour_4 {
+  background-color: #f37ab5;
+}
+
+.colour_5 {
+  background-color: #fdee03;
+}

@@ -3,11 +3,11 @@ import csv
 import torch
 from takeoff_client import TakeoffClient
 
-client = TakeoffClient(port=3000)
+client = TakeoffClient(port=4000)
 
-artist_file = "../data/artist_bios_sorted.csv"
-model= "mistral"
-model_dim = 4096
+artist_file = "../data/artists.csv"
+model= "jina"
+model_dim = 768
 
 # load artists data
 artists = []

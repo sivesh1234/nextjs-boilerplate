@@ -2,7 +2,7 @@ import csv
 
 import torch
 
-artist_file = "../data/artist_bios_sorted.csv"
+artist_file = "../data/artists.csv"
 model = "jina"
 recc_engine = torch.load(f"../recc_engines/similarity_matrix-{model}.pt")
 artists = {}
@@ -12,9 +12,8 @@ with open(artist_file, 'r') as file:
     reader = csv.reader(file)
     next(reader)
     for row in reader:
-        artists[row[0]] = row[1]
+        artists[row[0]] = {"bio": row[1], "problem": row[2] == 'True', "matches": int(row[3])}
         ordered_names.append(row[0])
-        
         
         
 class ArtistManager():
@@ -25,7 +24,10 @@ class ArtistManager():
         self.recc_engine = recc_engine
         
     def get_reccs(self, names, k):
-        name_indexes = [self.ordered_names.index(name.upper()) for name in names]
+        
+        names = [name.upper() for name in names if name.upper() in self.artists]
+        
+        name_indexes = [self.ordered_names.index(name) for name in names]
         num_artists = len(self.ordered_names)
         
         print("Num artists: ", num_artists)
@@ -61,7 +63,7 @@ class ArtistManager():
             recc_from = names[row].upper()
 
             if artist not in recc_artists:
-                recc = {'name': artist, 'bio': self.artists[artist], 'recc_from': [recc_from]}
+                recc = {'name': artist, 'bio': self.artists[artist]['bio'], 'recc_from': [recc_from]}
                 recc_artists[artist] = recc
             else:
                 recc_artists[artist]['recc_from'].append(recc_from)

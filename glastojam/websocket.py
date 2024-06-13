@@ -46,6 +46,7 @@ async def websocket_endpoint(websocket: WebSocket, user: str = Query(...)):
     statuses = {
         'job_1': False,
         'job_2': False,
+        'job_3': False,
     }
 
     async def poll_redis_for_results(user_id):
@@ -58,7 +59,7 @@ async def websocket_endpoint(websocket: WebSocket, user: str = Query(...)):
                     break
                 
                 # Check for job results in Redis
-                for job_num in range(1, 3):
+                for job_num in range(1, 4):
                     # Skip if already sent
                     if statuses[f"job_{job_num}"]:
                         continue

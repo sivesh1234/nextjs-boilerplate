@@ -3,20 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loader from 'react-loaders';
 import 'loaders.css/loaders.min.css';
+import { Tooltip } from 'react-tooltip'
+
 
 const WEBSOCKET_URL = 'ws://localhost:8080/ws'; // Adjust this URL to match your WebSocket server
 const API_BASE_URL = 'http://localhost:8080';
-
-function getCookie(name) {
-  let cookieArr = document.cookie.split(";");
-  for(let i = 0; i < cookieArr.length; i++) {
-      let cookiePair = cookieArr[i].split("=");
-      if(name === cookiePair[0].trim()) {
-          return decodeURIComponent(cookiePair[1]);
-      }
-  }
-  return null;
-}
 
 const Data = () => {
   const navigate = useNavigate();
@@ -24,17 +15,19 @@ const Data = () => {
   const [errorArtists, setErrorArtists] = useState(null);
   const [reccs, setReccs] = useState(null);
   const [errorReccs, setErrorReccs] = useState(null);
-  const [playlistId, setPlaylistId] = useState("4yFqCzL1KAsyR3p3Fd0PHn?si=db07deeb854949b4");
+  // const [playlistId, setPlaylistId] = useState("4yFqCzL1KAsyR3p3Fd0PHn?si=db07deeb854949b4");
+  const [highlightedArtists, setHighlightedArtists] = useState([]);
+  const [highlightedReccs, setHighlightedReccs] = useState([]);
 
-  // const [playlistId, setPlaylistId] = useState(null);
-  const num_jobs = 2;
+  const [playlistId, setPlaylistId] = useState(null);
+  const num_jobs = 3;
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/fetch_results`, { withCredentials: true });
         if (response.status === 200) {
-          const { job_1_result, job_2_result } = response.data;
+          const { job_1_result, job_2_result, job_3_result } = response.data;
           let results = 0;
 
           if (job_1_result) {
@@ -43,6 +36,10 @@ const Data = () => {
           }
           if (job_2_result) {
             setReccs(job_2_result);
+            results++;
+          }
+          if (job_3_result) {
+            setPlaylistId(job_3_result);
             results++;
           }
 
@@ -76,7 +73,7 @@ const Data = () => {
     const user_id = await get_user_id();
     console.log(user_id)
 
-    const socket = new WebSocket(`ws://localhost:8080/ws?user=${user_id}`);
+    const socket = new WebSocket(`${WEBSOCKET_URL}?user=${user_id}`);
 
     socket.onopen = () => {
       console.log('WebSocket connected');
@@ -91,6 +88,9 @@ const Data = () => {
         // setPlaylistId(message.result.playlistId);
       } else if (message.job === 'job_2') {
         setReccs(message.result);
+      } else if (message.job === 'job_3') {
+        console.log("Playlist ID: ", message.result)
+        setPlaylistId(message.result.playlist_id);
       }
     };
 
@@ -101,20 +101,32 @@ const Data = () => {
     return socket;
   };
 
-  // useEffect(() => {
-  //   let socket;
-  //   const initializeWebSocket = async () => {
-  //     socket = await connectWebSocket();
-  //   };
+  const hoverArtist = (artist_name) => {
+    if (reccs) {
+      const recc_array = reccs.map((recc) => {
+        if (recc.recc_from.includes(artist_name)) {
+          return recc.name;
+        }
+      })
+      console.log(recc_array)
+      setHighlightedReccs(recc_array);
+    }
+  }
 
-  //   initializeWebSocket();
+  const unhoverArtist = () => {
+    setHighlightedReccs([]);
+  }
 
-  //   return () => {
-  //     if (socket) {
-  //       socket.close();
-  //     }
-  //   };
-  // }, []);
+  const hoverRecc = (recc) => {
+    console.log(`Hovering over ${recc}`);
+    setHighlightedArtists(recc.recc_from);
+  }
+
+  const unhoverRecc = () => {
+    setHighlightedArtists([]);
+  }
+   
+  console.log(highlightedArtists)
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen">
@@ -142,36 +154,63 @@ const Data = () => {
         <div className="mb-4">
           <h3 className="text-2xl font-bold mb-4">Your Artists</h3>
           {artists === null ? (
-            <div className="flex items-center justify-center h-full job-load-box">
-              <Loader type="ball-pulse" active color="#1dd660" />
+            <div className="flex items-center justify-center h-full job-load-box animate-pulse bg-zinc-700 opacity-25 rounded-md">
+              {/* <Loader type="ball-pulse" active color="#1dd660" /> */}
             </div>
           ) : errorArtists ? (
             <p className="text-red-500 text-center">{errorArtists}</p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 justify-center items-center">
-              {artists.map((artist, index) => (
-                <div key={index} className="bg-gray-100 rounded-md py-1 px-2 flex items-center justify-center animate-pop-in-late artist-box">
-                  <p className="text-gray-500 text-center">{artist.name}</p>
-                </div>
-              ))}
+              {artists.map((artist, index) => {
+                let classes = "rounded-md py-1 px-2 flex items-center justify-center animate-pop-in-late artist-box"
+                const tooltip_text = artist.bio;
+                const highlighted = highlightedArtists.includes(artist.name);
+                if (highlighted) {
+                  const artistIndex = index % 6;
+                  classes += ` colour_${artistIndex} text-white`;
+                } else {
+                  classes += " bg-gray-100 text-gray-500";
+                }
+                return ( 
+                  <div key={index} className={classes} onMouseEnter={() => {hoverArtist(artist.name)}} onMouseLeave={unhoverArtist} data-tooltip-id="my-tooltip" data-tooltip-content={tooltip_text}>
+                    <p className="text-center">{artist.name}</p>
+                    <Tooltip id="my-tooltip" style={{maxWidth: "250px"}}/>
+                  </div>
+                )
+                })}
             </div>
           )}
         </div>
         <div>
           <h3 className="text-2xl font-bold mb-4">Recommended Artists</h3>
           {reccs === null ? (
-            <div className="flex items-center justify-center h-full job-load-box">
-              <Loader type="ball-pulse" active color="#1dd660" />
+            <div className="flex items-center justify-center h-full job-load-box animate-pulse bg-zinc-700 opacity-25 rounded-md">
+              {/* <Loader type="ball-pulse" active color="#1dd660" /> */}
             </div>
           ) : errorReccs ? (
             <p className="text-red-500 text-center">{errorReccs}</p>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 justify-center items-center">
-              {reccs.map((recc, index) => (
-                <div key={index} className="bg-gray-100 rounded-md p-4 flex items-center justify-center animate-pop-in-late">
-                  <p className="text-gray-500 text-center">{recc.name}</p>
-                </div>
-              ))}
+              {reccs.map((recc, index) => {
+                let classes = "rounded-md py-1 px-2 flex items-center justify-center animate-pop-in-late artist-box"
+                const tooltip_text = recc.bio;
+                console.log(highlightedReccs)
+                console.log(recc.name)
+                const highlighted = highlightedReccs.includes(recc.name);
+                if (highlighted) {
+                  const reccIndex = index % 6;
+                  classes += ` colour_${reccIndex} text-white`;
+                } else {
+                  classes += " bg-gray-100 text-gray-500";
+                }
+                console.log(classes)
+                return ( 
+                  <div key={index} onMouseEnter={() => {hoverRecc(recc)}} onMouseLeave={unhoverRecc} className={classes} data-tooltip-id="my-tooltip" data-tooltip-content={tooltip_text}>
+                    <p className="text-center">{recc.name}</p>
+                    <Tooltip id="my-tooltip" style={{maxWidth: "250px"}}/>
+                  </div>
+                )
+                })}
             </div>
           )}
         </div>

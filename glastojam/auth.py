@@ -43,7 +43,7 @@ sp_oauth = SpotifyOAuth(
     client_id=SPOTIFY_CLIENT_ID,
     client_secret=SPOTIFY_CLIENT_SECRET,
     redirect_uri=SPOTIFY_REDIRECT_URI,
-    scope="user-read-private user-read-email playlist-modify-public user-top-read"
+    scope="user-read-private user-read-email playlist-modify-public user-top-read ugc-image-upload"
     
 )
 
