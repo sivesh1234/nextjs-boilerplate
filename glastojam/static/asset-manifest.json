@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/static/css/main.b7d49710.css",
+    "main.js": "/static/js/main.46ed6cf5.js",
+    "static/media/glasto-poster4.jpeg": "/static/media/glasto-poster4.c4d2421af47b03e6144c.jpeg",
+    "static/media/Gotham-Black.woff": "/static/media/Gotham-Black.2b13e9d224b5c2b322b4.woff",
+    "static/media/Gotham-Medium.woff": "/static/media/Gotham-Medium.f86bdf9ccdf19525be19.woff",
+    "static/media/Gotham-Light.woff": "/static/media/Gotham-Light.3967796e081d39a7c167.woff",
+    "static/media/Gotham-Bold.woff": "/static/media/Gotham-Bold.4172f50f188fe6f28746.woff",
+    "static/media/Gotham-Black.woff2": "/static/media/Gotham-Black.68e2743eb0231b268cf0.woff2",
+    "static/media/Gotham-Medium.woff2": "/static/media/Gotham-Medium.d47e1f4270b8c2d3e95c.woff2",
+    "static/media/Gotham-Light.woff2": "/static/media/Gotham-Light.536d4839678ebe2f80a7.woff2",
+    "static/media/Gotham-Bold.woff2": "/static/media/Gotham-Bold.e3bf9ea2d80edb95b4f5.woff2",
+    "index.html": "/index.html",
+    "main.b7d49710.css.map": "/static/css/main.b7d49710.css.map",
+    "main.46ed6cf5.js.map": "/static/js/main.46ed6cf5.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b7d49710.css",
+    "static/js/main.46ed6cf5.js"
+  ]
+}

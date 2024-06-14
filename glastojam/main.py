@@ -1,6 +1,7 @@
 import json
 
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from auth import router as auth_router, get_current_user, User
@@ -21,9 +22,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(websocket_router)
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+app.mount("/", StaticFiles(directory="static/", html=True), name="static")
 
 @app.get("/job-result/{job_id}")
 async def job_result(job_id: str, current_user: User = Depends(get_current_user)):

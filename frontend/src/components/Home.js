@@ -31,11 +31,11 @@ const Home = () => {
       try {
         console.log('here')
         console.log(apiBaseUrl)
-        const response = await fetch(`${apiBaseUrl}/login`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        console.log('here2')
+        const response = await axios.get(`http://localhost:8080/login`, { withCredentials: true });
+        // const response = await fetch(`http://localhost:8080/login`, {
+        //   method: 'GET',
+        //   credentials: 'include',
+        // });
   
         if (response.ok) {
           const data = await response.json();
@@ -44,6 +44,8 @@ const Home = () => {
           console.error('Login failed');
         }
       } catch (error) {
+        console.log("in error")
+        console.log(error)
         console.error('Error during login:', error);
       }
     };
