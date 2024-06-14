@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from clashfinder import *
-import requests
+from .root.clashfinder import *
+
 app = FastAPI()
 
 # Allow CORS for your frontend application
