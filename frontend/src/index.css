@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply font-sans;
+}
+
+body {
+  font-family: 'Gotham', sans-serif;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: black;
+  color: white;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+@font-face {
+  font-family: 'Gotham';
+  src: url('./fonts/Gotham-Light.woff2') format('woff2'),
+      url('./fonts/Gotham-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gotham';
+  src: url('./fonts/Gotham-Medium.woff2') format('woff2'),
+      url('./fonts/Gotham-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gotham';
+  src: url('./fonts/Gotham-Bold.woff2') format('woff2'),
+      url('./fonts/Gotham-Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gotham';
+  src: url('./fonts/Gotham-Black.woff2') format('woff2'),
+      url('./fonts/Gotham-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+.job-load-box {
+  min-height: 56px;
+}
+
+@keyframes popInLate {
+  0% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(0);
+  }
+
+  80% {
+    transform: scale(1.025);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-pop-in-late {
+  animation: popInLate 0.5s ease-out;
+}
+
+.artist-box {
+  min-height: 56px;
+}
+
+/* Glasto Colours */
+.colour_0 {
+  background-color: #01b5f5;
+}
+
+.colour_1 {
+  background-color: #04a141;
+}
+
+.colour_2 {
+  background-color: #eb620e;
+}
+
+.colour_3 {
+  background-color: #e51730;
+}
+
+.colour_4 {
+  background-color: #f37ab5;
+}
+
+.colour_5 {
+  background-color: #fdee03;
+}

@@ -1,0 +1,9 @@
+takeoff:
+  server_config:
+    batch_duration_millis: 10
+  readers_config:
+    model_2:
+      model_name: TitanML/jina-v2-base-en-embed
+      device: cuda
+      consumer_group: embed
+      log_level: warning

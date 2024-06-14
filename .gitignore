@@ -10,11 +10,11 @@
 /coverage
 
 # next.js
-/.next/
-/out/
+/frotend/.next/
+/frontend/out/
 
 # production
-/build
+/frontend/build
 
 # misc
 .DS_Store
@@ -34,3 +34,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/glastojam/.env
+
+.env
+
+.venv/
+
+__pycahce__/
+
+node_modules/
+
+*.pyc
