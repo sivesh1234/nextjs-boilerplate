@@ -36,9 +36,15 @@ const Home = () => {
         //   method: 'GET',
         //   credentials: 'include',
         // });
+
+        console.log("NOW")
+        console.log(response)
+        console.log(response.ok)
+        console.log(response.status)
   
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status == 200) {
+          const data = response.data;
+          console.log(data)
           window.location.href = data.auth_url;  // Directly redirect the browser
         } else {
           console.error('Login failed');

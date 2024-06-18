@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.b7d49710.css",
-    "main.js": "/static/js/main.46ed6cf5.js",
+    "main.js": "/static/js/main.8fa03204.js",
     "static/media/glasto-poster4.jpeg": "/static/media/glasto-poster4.c4d2421af47b03e6144c.jpeg",
     "static/media/Gotham-Black.woff": "/static/media/Gotham-Black.2b13e9d224b5c2b322b4.woff",
     "static/media/Gotham-Medium.woff": "/static/media/Gotham-Medium.f86bdf9ccdf19525be19.woff",
@@ -13,10 +13,10 @@
     "static/media/Gotham-Bold.woff2": "/static/media/Gotham-Bold.e3bf9ea2d80edb95b4f5.woff2",
     "index.html": "/index.html",
     "main.b7d49710.css.map": "/static/css/main.b7d49710.css.map",
-    "main.46ed6cf5.js.map": "/static/js/main.46ed6cf5.js.map"
+    "main.8fa03204.js.map": "/static/js/main.8fa03204.js.map"
   },
   "entrypoints": [
     "static/css/main.b7d49710.css",
-    "static/js/main.46ed6cf5.js"
+    "static/js/main.8fa03204.js"
   ]
 }
