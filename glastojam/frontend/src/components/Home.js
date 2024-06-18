@@ -4,7 +4,7 @@ import axios from 'axios';
 import backgroundImage from '../img/glasto-poster4.jpeg'; // Adjust the path as necessary
 
 
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -26,25 +26,12 @@ const Home = () => {
 
   const handleLogin = async () => {
     console.log('Logging in...');
-      const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   
       try {
-        console.log('here')
-        console.log(apiBaseUrl)
-        const response = await axios.get(`http://localhost:8080/login`, { withCredentials: true });
-        // const response = await fetch(`http://localhost:8080/login`, {
-        //   method: 'GET',
-        //   credentials: 'include',
-        // });
-
-        console.log("NOW")
-        console.log(response)
-        console.log(response.ok)
-        console.log(response.status)
+        const response = await axios.get(`${API_BASE_URL}/login`, { withCredentials: true });
   
         if (response.status == 200) {
           const data = response.data;
-          console.log(data)
           window.location.href = data.auth_url;  // Directly redirect the browser
         } else {
           console.error('Login failed');

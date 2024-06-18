@@ -12,7 +12,9 @@ from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_UR
 from jobs import start_job_1
 from db import redis_client
 
-router = APIRouter()
+# set router prefix to /api
+router = APIRouter(prefix="/api")
+# router = APIRouter()
 
 credentials_exception = HTTPException(
     status_code=401,
@@ -106,7 +108,7 @@ async def callback(code: str):
         # Put job ID for user in Redis
         redis_client.set(user.id, job_1.id)
 
-    response = RedirectResponse(url=f"http://localhost:3000/data")
+    response = RedirectResponse(url="/data")
     response.set_cookie(key="access_token", value=jwt_token, httponly=True)
     return response
 

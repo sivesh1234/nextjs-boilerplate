@@ -5,9 +5,8 @@ import Loader from 'react-loaders';
 import 'loaders.css/loaders.min.css';
 import { Tooltip } from 'react-tooltip'
 
-
 const WEBSOCKET_URL = 'ws://localhost:8080/ws'; // Adjust this URL to match your WebSocket server
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 const Data = () => {
   const navigate = useNavigate();
